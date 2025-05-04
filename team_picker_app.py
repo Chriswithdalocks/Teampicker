@@ -3,9 +3,9 @@ import pandas as pd
 import random
 
 # Excel-Datei einlesen
-df = pd.read_excel("spieler.xlsx")  # <- deine Excel-Datei hier
+df = pd.read_excel("spieler.xlsx")
 
-# Stärke berechnen (einfaches Beispiel)
+# Stärke berechnen
 rank_order = {
     'IRON': 1, 'BRONZE': 2, 'SILBER': 3, 'SILVER': 3,
     'GOLD': 4, 'PLATIN': 5, 'PLATINUM': 5, 'EMERALD': 6,
@@ -18,28 +18,32 @@ df['Strength'] = df['Rank_Num'] * 100 + df['Points']
 st.title("Team Picker für Einsteiger")
 selected_players = st.multiselect("Wähle 10 Spieler:", df['Name'].tolist())
 
+# Zustand merken
+if 'shuffle' not in st.session_state:
+    st.session_state.shuffle = False
+
 if len(selected_players) == 10:
     if st.button("Neu zusammenstellen"):
-        selected_df = df[df['Name'].isin(selected_players)].copy()
-        selected_df = selected_df.sample(frac=1, random_state=random.randint(0, 10000))  # Spieler mischen
+        st.session_state.shuffle = not st.session_state.shuffle
 
-        team1, team2 = [], []
-        strength1, strength2 = 0, 0
+    # Spieler zufällig mischen
+    selected_df = df[df['Name'].isin(selected_players)].copy()
+    selected_df = selected_df.sample(frac=1, random_state=random.randint(0, 10000))
 
-        for _, row in selected_df.iterrows():
-            if strength1 <= strength2:
-                team1.append(row)
-                strength1 += row['Strength']
-            else:
-                team2.append(row)
-                strength2 += row['Strength']
+    # Abwechselnd in zwei Teams aufteilen
+    team1 = selected_df.iloc[::2]
+    team2 = selected_df.iloc[1::2]
 
-        st.subheader(f"Team 1 (Stärke: {strength1})")
-        st.write(pd.DataFrame(team1)[['Name', 'Rank', 'Points']])
-        
-        st.subheader(f"Team 2 (Stärke: {strength2})")
-        st.write(pd.DataFrame(team2)[['Name', 'Rank', 'Points']])
+    strength1 = team1['Strength'].sum()
+    strength2 = team2['Strength'].sum()
+
+    st.subheader(f"Team 1 (Stärke: {strength1})")
+    st.write(team1[['Name', 'Rank', 'Points']])
+    
+    st.subheader(f"Team 2 (Stärke: {strength2})")
+    st.write(team2[['Name', 'Rank', 'Points']])
 else:
     st.info("Bitte genau 10 Spieler auswählen.")
+
 
 
