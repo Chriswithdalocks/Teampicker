@@ -5,14 +5,8 @@ import random
 # Excel-Datei einlesen
 df = pd.read_excel("spieler.xlsx")
 
-# Stärke berechnen
-rank_order = {
-    'IRON': 1, 'BRONZE': 2, 'SILBER': 3, 'SILVER': 3,
-    'GOLD': 4, 'PLATIN': 5, 'PLATINUM': 5, 'EMERALD': 6,
-    'DIAMANT': 7, 'DIAMOND': 7, 'MASTER': 8, 'GRANDMASTER': 9, 'CHALLENGER': 10
-}
-df['Rank_Num'] = df['Rank'].str.upper().map(rank_order)
-df['Strength'] = df['Rank_Num'] * 100 + df['Points']
+# Nur Punkte für Stärke verwenden
+df['Strength'] = df['Points']
 
 # UI
 st.title("Team Picker für Einsteiger")
@@ -44,6 +38,7 @@ if len(selected_players) == 10:
     st.write(team2[['Name', 'Rank', 'Points']])
 else:
     st.info("Bitte genau 10 Spieler auswählen.")
+
 
 
 
