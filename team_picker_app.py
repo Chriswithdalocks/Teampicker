@@ -50,23 +50,5 @@ if len(selected_players) == 10:
         with col2:
             st.subheader(f"Team 2 (Stärke: {strength2})")
             st.dataframe(team2_df[['Name', 'Rank', 'Points']])
-    team1, team2 = [], []
-    strength1, strength2 = 0, 0
-
-    for _, row in selected_df.iterrows():
-        if strength1 <= strength2:
-            team1.append(row)
-            strength1 += row['Strength']
-        else:
-            team2.append(row)
-            strength2 += row['Strength']
-
-    st.subheader(f"Team 1 (Stärke: {strength1})")
-    st.write(pd.DataFrame(team1)[['Name', 'Rank', 'Points']])
     
-    st.subheader(f"Team 2 (Stärke: {strength2})")
-    st.write(pd.DataFrame(team2)[['Name', 'Rank', 'Points']])
-else:
-    st.info("Bitte genau 10 Spieler auswählen.")
-   
 
